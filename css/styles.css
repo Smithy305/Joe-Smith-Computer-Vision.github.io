@@ -1,6 +1,6 @@
 /* General Styles */
 body {
-    font-family: 'Merriweather', serif; /* Font for body text */
+    font-family: 'Merriweather', serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -28,6 +28,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
 }
 
 .header-content {
@@ -35,10 +36,12 @@ header {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .header-text {
-    max-width: 70%; /* Adjust width as needed */
+    max-width: 100%; /* Full width on mobile */
+    text-align: center; /* Center text on mobile */
 }
 
 .header-text h1 {
@@ -51,9 +54,10 @@ header {
 }
 
 .header-image {
-    max-width: 30%;
+    max-width: 100%; /* Full width on mobile */
     display: flex;
-    justify-content: flex-end;
+    justify-content: center; /* Center image on mobile */
+    margin-top: 15px; /* Add spacing on mobile */
 }
 
 .profile-pic {
@@ -67,18 +71,18 @@ header {
 nav {
     background-color: #008080; /* Teal for nav */
     padding: 15px 0; /* Padding for nav bar */
+    text-align: center; /* Center text on mobile */
 }
 
 nav ul {
     padding: 0;
     margin: 0;
     list-style: none;
-    text-align: center;
 }
 
 nav ul li {
-    display: inline;
-    margin: 0 20px; /* Spacing between nav items */
+    display: inline-block;
+    margin: 0 10px; /* Adjust spacing between nav items */
 }
 
 nav ul li a {
@@ -98,11 +102,10 @@ nav ul li a:hover {
 
 section {
     padding: 30px 20px; /* Padding for main content */
-    margin: 0; /* Remove gaps between sections */
+    margin: 0;
     background-color: #fff; /* White background for content */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     border-radius: 0; /* Remove border radius */
-    border-bottom: none; /* Remove bottom border/divider */
 }
 
 section + section {
@@ -133,23 +136,31 @@ footer {
     color: #ffb6c1; /* Light Pink color on hover */
 }
 
-/* Optional: Style the modal backdrop */
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-}
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    header {
+        padding: 15px; /* Adjust padding for smaller screens */
+        flex-direction: column; /* Stack header content vertically */
+    }
 
-.modal-backdrop img {
-    max-width: 90%;
-    max-height: 90%;
-    box-shadow: 0 0 10px #fff;
+    .header-content {
+        flex-direction: column; /* Stack text and image */
+    }
+
+    .header-text {
+        text-align: center; /* Center text on mobile */
+    }
+
+    .header-image {
+        margin-top: 10px; /* Add spacing between text and image */
+    }
+
+    nav ul li {
+        display: block; /* Stack nav items vertically */
+        margin: 10px 0; /* Adjust margin for vertical layout */
+    }
+
+    nav ul li a {
+        padding: 10px; /* Adjust padding for nav items */
+    }
 }
