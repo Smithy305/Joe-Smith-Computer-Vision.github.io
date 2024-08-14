@@ -1,11 +1,24 @@
 /* General Styles */
 body {
-    font-family: 'Graphik', Arial, sans-serif;
+    font-family: 'Merriweather', serif; /* Font for body text */
     line-height: 1.6;
     margin: 0;
     padding: 0;
     background-color: #f5f5f5; /* Light background */
     color: #333333; /* Dark gray text */
+}
+
+h1, h2 {
+    font-family: 'Montserrat', sans-serif; /* Font for headings */
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 header {
@@ -30,7 +43,6 @@ header {
 
 .header-text h1 {
     margin: 0;
-    font-size: 28px;
 }
 
 .header-text p {
@@ -54,7 +66,7 @@ header {
 
 nav {
     background-color: #008080; /* Teal for nav */
-    padding: 15px 0; /* Reduced padding for thicker nav bar */
+    padding: 15px 0; /* Padding for nav bar */
 }
 
 nav ul {
@@ -66,29 +78,29 @@ nav ul {
 
 nav ul li {
     display: inline;
-    margin: 0 20px; /* Increase spacing between nav items */
+    margin: 0 20px; /* Spacing between nav items */
 }
 
 nav ul li a {
     color: #FFFFFF; /* White text for links */
     text-decoration: none;
-    font-size: 18px; /* Increase font size for nav items */
-    font-weight: bold; /* Make the text bolder */
-    padding: 10px 15px; /* Add padding to make the box bigger */
+    font-size: 18px; /* Font size for nav items */
+    font-weight: bold; /* Bold text */
+    padding: 10px 15px; /* Padding for links */
     transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 nav ul li a:hover {
     background-color: #ffb6c1; /* Light Pink background on hover */
     color: #333333; /* Dark gray text on hover */
-    border-radius: 5px; /* Optional: Add rounded corners */
+    border-radius: 5px; /* Rounded corners */
 }
 
 section {
-    padding: 30px 20px; /* Reduced padding for main content */
+    padding: 30px 20px; /* Padding for main content */
     margin: 0; /* Remove gaps between sections */
     background-color: #fff; /* White background for content */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly lighter shadow for depth */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     border-radius: 0; /* Remove border radius */
     border-bottom: none; /* Remove bottom border/divider */
 }
@@ -103,6 +115,22 @@ footer {
     text-align: center;
     padding: 10px 0;
     margin-top: 0;
+}
+
+/* Contact Icons */
+#contact p {
+    display: inline-block;
+    margin: 0 15px;
+}
+
+#contact i {
+    font-size: 24px; /* Size of the icons */
+    color: #008080; /* Teal color for icons */
+    transition: color 0.3s ease; /* Smooth transition */
+}
+
+#contact a:hover i {
+    color: #ffb6c1; /* Light Pink color on hover */
 }
 
 /* Optional: Style the modal backdrop */
