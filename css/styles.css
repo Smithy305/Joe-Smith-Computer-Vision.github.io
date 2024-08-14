@@ -120,9 +120,8 @@ footer {
     margin-top: 0;
 }
 
-/* Contact Icons */
 #contact p {
-    display: inline-block;
+    display: inline-block; /* Ensure inline-block to prevent stacking */
     margin: 0 15px;
 }
 
@@ -130,6 +129,7 @@ footer {
     font-size: 24px; /* Size of the icons */
     color: #008080; /* Teal color for icons */
     transition: color 0.3s ease; /* Smooth transition */
+    display: inline-block; /* Make sure the icons don't stack */
 }
 
 #contact a:hover i {
