@@ -82,7 +82,7 @@ nav ul {
 
 nav ul li {
     display: inline-block;
-    margin: 0 10px; /* Adjust spacing between nav items */
+    margin: 0 20px; /* Spacing between nav items */
 }
 
 nav ul li a {
@@ -100,16 +100,29 @@ nav ul li a:hover {
     border-radius: 5px; /* Rounded corners */
 }
 
+/* Section Styling */
 section {
-    padding: 30px 20px; /* Padding for main content */
+    padding: 30px 20px;
     margin: 0;
-    background-color: #fff; /* White background for content */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    background-color: #fff; /* Match the background color of other sections */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Match the shadow of other sections */
     border-radius: 0; /* Remove border radius */
+    border-bottom: 1px solid #ddd; /* Subtle divider between sections */
 }
 
-section + section {
-    margin-top: 10px; /* Slight gap between sections */
+/* Skills Section Specific Styling */
+#skills ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#skills li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#skills li strong {
+    color: #008080; /* Teal color for skill categories */
 }
 
 footer {
@@ -120,8 +133,9 @@ footer {
     margin-top: 0;
 }
 
+/* Contact Icons */
 #contact p {
-    display: inline-block; /* Ensure inline-block to prevent stacking */
+    display: inline-block;
     margin: 0 15px;
 }
 
@@ -129,11 +143,31 @@ footer {
     font-size: 24px; /* Size of the icons */
     color: #008080; /* Teal color for icons */
     transition: color 0.3s ease; /* Smooth transition */
-    display: inline-block; /* Make sure the icons don't stack */
 }
 
 #contact a:hover i {
     color: #ffb6c1; /* Light Pink color on hover */
+}
+
+/* Optional: Style the modal backdrop */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.modal-backdrop img {
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 0 10px #fff;
 }
 
 /* Responsive Design for Mobile */
