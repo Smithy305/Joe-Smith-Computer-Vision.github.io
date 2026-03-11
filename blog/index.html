@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph Smith - Blog</title>
+    <link rel="stylesheet" href="../css/styles.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../images/your-headshot.jpg">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Joseph Smith</h1>
+                <p>Deep Learning and Computer Vision Researcher</p>
+            </div>
+            <div class="header-image">
+                <img src="../images/your-headshot.jpg" alt="Joseph Smith" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html#about">About Me</a></li>
+            <li><a href="../index.html#education">Education</a></li>
+            <li><a href="../index.html#work-history">Work History</a></li>
+            <li><a href="../index.html#skills">Skills</a></li>
+            <li><a href="../index.html#publications">Publications</a></li>
+            <li><a href="#posts">Blog</a></li>
+            <li><a href="../index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <div class="blog-intro">
+            <h2>✍️ Blog</h2>
+            <p>This section collects practical, implementation-oriented write-ups from my PhD research. I focus on robust computer vision and deep learning methods that transfer to real deployment settings: handling image quality variation, adapting models as data evolves, and improving segmentation and fine-grained classification under distribution shift.</p>
+            <p>Posts are written to be readable by both researchers and engineers. I include method framing, concrete lessons, failure cases, and links to the related papers.</p>
+        </div>
+    </section>
+
+    <section id="posts">
+        <div class="blog-listing">
+            <h2>Latest Posts</h2>
+            <div class="filter-controls" aria-label="Blog tag filters">
+                <button class="filter-btn active" data-filter="all" type="button">All</button>
+                <button class="filter-btn" data-filter="robustness" type="button">Robustness</button>
+                <button class="filter-btn" data-filter="fgvc" type="button">FGVC</button>
+                <button class="filter-btn" data-filter="segmentation" type="button">Segmentation</button>
+                <button class="filter-btn" data-filter="transfer-learning" type="button">Transfer Learning</button>
+            </div>
+            <div class="blog-cards">
+            <article class="blog-card" data-tags="robustness segmentation transfer-learning">
+                <img src="../images/framework-2.jpg" alt="Augmentation-based model re-adaptation framework overview" class="blog-card-image">
+                <h3><a href="posts/2026-03-11-model-readaptation-under-domain-shift.html">Model Re-Adaptation Under Domain Shift</a></h3>
+                <p class="blog-meta">March 11, 2026 · 13 min read</p>
+                <div class="tag-list">
+                    <span class="tag-chip">Robustness</span>
+                    <span class="tag-chip">Segmentation</span>
+                    <span class="tag-chip">Transfer Learning</span>
+                </div>
+                <p>A practical framework for preserving performance while adapting to evolving data distributions over time.</p>
+                <ul>
+                    <li>How to choose between retraining and sequential fine-tuning</li>
+                    <li>Avoiding catastrophic forgetting while absorbing new classes</li>
+                    <li>Why evolving augmentation pools improve segmentation robustness</li>
+                </ul>
+            </article>
+            <article class="blog-card" data-tags="robustness fgvc">
+                <img src="../images/figure_quality_effects.jpg" alt="Quality effects on deep neural network classification" class="blog-card-image">
+                <h3><a href="posts/2026-03-11-image-quality-filtering-for-fgvc.html">Image Quality Filtering for Fine-Grained Classification</a></h3>
+                <p class="blog-meta">March 11, 2026 · 12 min read</p>
+                <div class="tag-list">
+                    <span class="tag-chip">Robustness</span>
+                    <span class="tag-chip">FGVC</span>
+                </div>
+                <p>Lessons from no-reference quality scoring and cut-off point selection in FGVC pipelines.</p>
+                <ul>
+                    <li>Why training quality distribution matters for deployment reliability</li>
+                    <li>How to derive quality cut-off points from confidence-quality trends</li>
+                    <li>When quality pruning helps more than architecture changes</li>
+                </ul>
+            </article>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Joseph Smith. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.blog-card');
+
+        filterButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const filter = button.dataset.filter;
+                filterButtons.forEach((btn) => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                cards.forEach((card) => {
+                    const tags = (card.dataset.tags || '').split(' ');
+                    const show = filter === 'all' || tags.includes(filter);
+                    card.style.display = show ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
