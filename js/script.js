@@ -1,8 +1,24 @@
-// Smooth Scrolling
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+// Smooth scrolling with sticky-nav offset
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+        const targetId = anchor.getAttribute('href');
+        if (!targetId || targetId === '#') {
+            return;
+        }
+
+        const target = document.querySelector(targetId);
+        if (!target) {
+            return;
+        }
+
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
+
+        const nav = document.querySelector('nav');
+        const navOffset = nav ? nav.offsetHeight + 10 : 0;
+        const top = target.getBoundingClientRect().top + window.scrollY - navOffset;
+
+        window.scrollTo({
+            top,
             behavior: 'smooth'
         });
     });
