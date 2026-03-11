@@ -15,6 +15,6 @@ Create a new post:
 
 Then:
 
-1. Fill in the generated post content.
+1. Fill in the post content.
 2. Add a post card to `blog/index.html`.
 3. Optionally add it to the featured blog cards in `index.html`.
