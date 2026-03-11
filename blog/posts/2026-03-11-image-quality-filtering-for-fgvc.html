@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Quality Filtering for Fine-Grained Classification</title>
+    <link rel="stylesheet" href="../../css/styles.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../../images/your-headshot.jpg">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Joseph Smith</h1>
+                <p>Deep Learning and Computer Vision Researcher</p>
+            </div>
+            <div class="header-image">
+                <img src="../../images/your-headshot.jpg" alt="Joseph Smith" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../../index.html#about">About Me</a></li>
+            <li><a href="../../index.html#education">Education</a></li>
+            <li><a href="../../index.html#work-history">Work History</a></li>
+            <li><a href="../../index.html#skills">Skills</a></li>
+            <li><a href="../../index.html#publications">Publications</a></li>
+            <li><a href="../index.html">Blog</a></li>
+            <li><a href="../../index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <article class="post-content">
+            <h1>Image Quality Filtering for Fine-Grained Classification</h1>
+            <p class="blog-meta">March 11, 2026 · 12 min read</p>
+            <div class="tag-list">
+                <span class="tag-chip">Robustness</span>
+                <span class="tag-chip">FGVC</span>
+                <span class="tag-chip">Image Quality</span>
+            </div>
+            <figure class="post-hero">
+                <img src="../../images/figure_quality_effects.jpg" alt="Figure illustrating how image quality affects deep neural network classification">
+                <figcaption>Representative visual from the quality-effect analysis in my thesis and VISAPP 2024 paper.</figcaption>
+            </figure>
+
+            <h2>Why This Problem Matters</h2>
+            <p>Fine-grained visual classification (FGVC) is often presented as a model architecture problem: better backbones, better attention modules, better losses. In real deployment, however, one of the dominant failure drivers is much simpler: <strong>image quality mismatch</strong> between training and inference.</p>
+            <p>In industrial and mobile settings, images are captured under motion blur, inconsistent focus, variable illumination, compression artefacts, and changing devices. If training data contains too much low-information content, the model can learn brittle shortcuts or simply fail to learn stable class cues.</p>
+
+            <h2>What I Investigated in Chapter 3</h2>
+            <p>In Chapter 3 of my thesis (<em>How Quality Affects Deep Neural Networks in Fine-Grained Image Classification</em>), I evaluated whether no-reference image quality assessment (NRIQA) can be used as a practical data selection mechanism before training.</p>
+            <p>The core idea was to avoid a binary split of "perfect" versus "imperfect" images. Instead, I used quality scores plus confidence-quality analysis to identify and remove the most harmful quality tail while preserving enough variation for robust learning.</p>
+
+            <h2>Method Summary</h2>
+            <p>The procedure was based on three linked components:</p>
+            <ul>
+                <li><strong>Quality scoring without reference images:</strong> multiple NRIQA methods were evaluated, including statistical and deep-learning-based quality estimators.</li>
+                <li><strong>Cut-off Point Selection (CPS):</strong> quality thresholds were selected from the interaction between quality distributions and prediction behaviour, rather than chosen arbitrarily.</li>
+                <li><strong>High-quality vs all-quality training comparison:</strong> the same model families were trained under controlled settings to isolate the quality filtering effect.</li>
+            </ul>
+            <p>This makes the setup operationally useful: the method can be applied in data pipelines where no pristine reference image exists.</p>
+
+            <h2>Key Results</h2>
+            <p>The main result was consistent: quality-filtered training subsets improved classification performance relative to all-quality training. One representative outcome was ResNet-34 improving from <strong>81.2%</strong> to <strong>85.4%</strong> when trained on filtered high-quality data.</p>
+            <p>This is a 4.2-point absolute gain in a practical FGVC setting. In larger decision pipelines, even modest absolute gains can materially reduce false alarms or re-inspection workload.</p>
+
+            <div class="highlight">
+                <strong>Practical takeaway:</strong> a targeted quality gate can provide stronger reliability gains than a costly architecture swap, especially when the deployment domain is mobile or uncontrolled.
+            </div>
+
+            <h2>What This Means for Deployment</h2>
+            <p>There are several deployment-level lessons that generalize beyond this specific thesis domain:</p>
+            <ul>
+                <li><strong>Do not assume more training data is always better.</strong> Adding low-quality data indiscriminately can dilute discriminative signal.</li>
+                <li><strong>Quality filtering should be calibrated, not aggressive by default.</strong> Keeping realistic variation is important; removing only the lowest-quality tail is often enough.</li>
+                <li><strong>Integrate quality checks early in MLOps.</strong> Quality scoring is cheap enough to place in data ingestion and curation loops.</li>
+                <li><strong>Track quality drift over time.</strong> If incoming quality distribution shifts, model reliability can degrade even when class distribution is unchanged.</li>
+            </ul>
+
+            <h2>Recommended Minimal Workflow</h2>
+            <p>If you want a lightweight replication path in another CV project, this sequence usually works:</p>
+            <ol>
+                <li>Compute NRIQA scores on candidate training images.</li>
+                <li>Train baseline on full data.</li>
+                <li>Train one filtered model after removing only the lowest quality tail.</li>
+                <li>Compare not only accuracy but error profile and confidence calibration.</li>
+                <li>Choose the threshold that improves stability, not just peak score.</li>
+            </ol>
+
+            <h2>Related Papers and Thesis Source</h2>
+            <ul class="citation-list">
+                <li>Smith, J., Zuo, Z., Stonehouse, J., Obara, B. (2024). <em>How Quality Affects Deep Neural Networks in Fine-Grained Image Classification</em>. VISAPP 2024. [arXiv](https://arxiv.org/abs/2405.05742).</li>
+                <li>PhD Thesis Chapter 3 (2025): <em>How Quality Affects Deep Neural Networks in Fine-Grained Image Classification</em>.</li>
+            </ul>
+
+            <section class="related-posts">
+                <h2>Related Posts</h2>
+                <div class="blog-cards">
+                    <article class="blog-card">
+                        <img src="../../images/framework-2.jpg" alt="Model re-adaptation framework figure" class="blog-card-image">
+                        <h3><a href="2026-03-11-model-readaptation-under-domain-shift.html">Model Re-Adaptation Under Domain Shift</a></h3>
+                        <p class="blog-meta">Companion post · robustness and continual adaptation</p>
+                        <p>If you are applying quality filtering in production, this follow-up post covers how to keep models stable as incoming data changes over time.</p>
+                    </article>
+                </div>
+            </section>
+        </article>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Joseph Smith. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Re-Adaptation Under Domain Shift</title>
+    <link rel="stylesheet" href="../../css/styles.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../../images/your-headshot.jpg">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Joseph Smith</h1>
+                <p>Deep Learning and Computer Vision Researcher</p>
+            </div>
+            <div class="header-image">
+                <img src="../../images/your-headshot.jpg" alt="Joseph Smith" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../../index.html#about">About Me</a></li>
+            <li><a href="../../index.html#education">Education</a></li>
+            <li><a href="../../index.html#work-history">Work History</a></li>
+            <li><a href="../../index.html#skills">Skills</a></li>
+            <li><a href="../../index.html#publications">Publications</a></li>
+            <li><a href="../index.html">Blog</a></li>
+            <li><a href="../../index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <article class="post-content">
+            <h1>Model Re-Adaptation Under Domain Shift</h1>
+            <p class="blog-meta">March 11, 2026 · 13 min read</p>
+            <div class="tag-list">
+                <span class="tag-chip">Robustness</span>
+                <span class="tag-chip">Segmentation</span>
+                <span class="tag-chip">Transfer Learning</span>
+            </div>
+            <figure class="post-hero">
+                <img src="../../images/framework-2.jpg" alt="Augmentation-based model re-adaptation framework illustration">
+                <figcaption>Framework view for augmentation-based re-adaptation and robustness under temporal drift.</figcaption>
+            </figure>
+
+            <h2>The Real Problem</h2>
+            <p>Most vision models do not fail because their first training run was poor. They fail because the world changes after that run: new data sources, new imaging conditions, changed class balance, new product variants, new annotation practices, and gradual drift in what "normal" looks like.</p>
+            <p>For long-lived computer vision systems, the central question is therefore not just "How do I train this model?" but "How do I <strong>re-adapt</strong> this model repeatedly without losing prior capability?"</p>
+
+            <h2>What I Studied Across Chapters 4 and 5</h2>
+            <p>Two thesis chapters address this from complementary angles:</p>
+            <ul>
+                <li><strong>Chapter 4 (Dual-Carriageway Framework):</strong> focused on fine-grained classification and compared different training pathways as new datasets become available over time.</li>
+                <li><strong>Chapter 5 (Augmentation-based Model Re-adaptation Framework):</strong> focused on segmentation under temporal domain shift, using an evolving augmentation pool plus pseudo re-adaptation to maintain mask and downstream classification quality.</li>
+            </ul>
+
+            <h2>Classification Re-Adaptation: Stability vs Plasticity</h2>
+            <p>In classification, I compared pathways such as retraining on combined historical+new data versus sequential fine-tuning. This exposes the classic trade-off:</p>
+            <ul>
+                <li><strong>From-scratch mixed-data retraining</strong> usually gives better stability on old and new distributions, but has higher compute and retraining cost.</li>
+                <li><strong>Sequential fine-tuning</strong> adapts quickly and cheaply, but can degrade older classes if historical signal is not actively preserved.</li>
+            </ul>
+            <p>In practice, this is not only a modelling decision; it is an operational decision tied to update cadence, compute budget, and tolerance for temporary regressions.</p>
+
+            <h2>Padding and Input Conditioning Matter More Than Expected</h2>
+            <p>An important finding from the Dual-Carriageway work is that "small" preprocessing choices can produce measurable differences in robustness and explainability. Padding scheme selection, for example, influenced confidence behaviour and transfer performance.</p>
+            <p>This reinforces a broader point: robust adaptation is often built from a stack of controlled low-level decisions, not from one dramatic algorithmic change.</p>
+
+            <h2>Segmentation Re-Adaptation: Evolving Augmentation Pools</h2>
+            <p>In segmentation, fixed augmentation recipes were often too static for evolving deployment conditions. The augmentation-based re-adaptation framework addressed this by incrementally extending the augmentation pool using observed failure patterns and curriculum-style pseudo re-adaptation.</p>
+            <p>The result was improved segmentation and crop reliability under later time-slice datasets, which then improved downstream classification quality as well.</p>
+
+            <div class="highlight">
+                <strong>Practical takeaway:</strong> re-adaptation should be treated as a continuous pipeline process with validation gates, not a one-off emergency retrain event.
+            </div>
+
+            <h2>Deployment Playbook for Re-Adaptation</h2>
+            <p>A practical process that follows the thesis findings looks like this:</p>
+            <ol>
+                <li><strong>Monitor drift indicators:</strong> track quality distribution, confidence shifts, and classwise error changes.</li>
+                <li><strong>Choose adaptation path per update:</strong> decide between full mixed retraining and staged fine-tuning using expected drift magnitude.</li>
+                <li><strong>Preserve historical competence:</strong> include replay or mixed historical data in adaptation loops to reduce forgetting risk.</li>
+                <li><strong>Maintain augmentation governance:</strong> add or tune augmentations based on concrete observed failures, not generic defaults.</li>
+                <li><strong>Validate on old and new splits:</strong> never evaluate only on latest data; adaptation must be judged on retention and acquisition together.</li>
+            </ol>
+
+            <h2>Why This Generalizes Beyond My Domain</h2>
+            <p>Although these studies were motivated by an industrial visual inspection setting, the same pattern appears in many modern CV systems:</p>
+            <ul>
+                <li>medical imaging models updating across scanners and sites,</li>
+                <li>retail/warehouse recognition models across seasons and devices,</li>
+                <li>autonomy/perception stacks across weather and camera updates.</li>
+            </ul>
+            <p>In all of these, the challenge is continuous adaptation under uncertainty, with hard constraints on reliability.</p>
+
+            <h2>Related Papers and Thesis Source</h2>
+            <ul class="citation-list">
+                <li>Zuo, Z., Smith, J., Stonehouse, J., Obara, B. (2024). <em>Robust and Explainable Fine-Grained Visual Classification with Transfer Learning: A Dual-Carriageway Framework</em>. CVPR Workshop 2024. [arXiv](https://arxiv.org/abs/2405.05853).</li>
+                <li>Zuo, Z., Smith, J., Stonehouse, J., Obara, B. (2024). <em>An Augmentation-based Model Re-adaptation Framework for Robust Image Segmentation</em>. ECCV Workshops (Best Paper Award).</li>
+                <li>PhD Thesis Chapters 4 and 5 (2025).</li>
+            </ul>
+
+            <section class="related-posts">
+                <h2>Related Posts</h2>
+                <div class="blog-cards">
+                    <article class="blog-card">
+                        <img src="../../images/figure_quality_effects.jpg" alt="Quality effects figure for FGVC" class="blog-card-image">
+                        <h3><a href="2026-03-11-image-quality-filtering-for-fgvc.html">Image Quality Filtering for Fine-Grained Classification</a></h3>
+                        <p class="blog-meta">Companion post · data quality and model reliability</p>
+                        <p>This post covers why quality-aware training subset selection is often the first high-impact step before larger architecture changes.</p>
+                    </article>
+                </div>
+            </section>
+        </article>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Joseph Smith. All rights reserved.</p>
+    </footer>
+</body>
+</html>
