@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Accuracy to Trust: Using Explanations to Debug Vision Models</title>
+    <link rel="stylesheet" href="../../css/styles.css?v=1.2">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../../images/your-headshot.jpg">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Joseph Smith</h1>
+                <p>Deep Learning and Computer Vision Researcher</p>
+            </div>
+            <div class="header-image">
+                <img src="../../images/your-headshot.jpg" alt="Joseph Smith" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../../index.html#about">About Me</a></li>
+            <li><a href="../../index.html#education">Education</a></li>
+            <li><a href="../../index.html#work-history">Work History</a></li>
+            <li><a href="../../index.html#skills">Skills</a></li>
+            <li><a href="../../index.html#publications">Publications</a></li>
+            <li><a href="../../index.html#presentations">Presentations</a></li>
+            <li><a href="../index.html">Blog</a></li>
+            <li><a href="../../index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <article class="post-content">
+    <h1>From Accuracy to Trust: Using Explanations to Debug Vision Models</h1>
+    <p class="blog-meta">March 11, 2026 · 11 min read</p>
+    <div class="tag-list">
+        <span class="tag-chip">Explainability</span>
+        <span class="tag-chip">Robustness</span>
+        <span class="tag-chip">FGVC</span>
+    </div>
+    <figure class="post-hero">
+        <img src="../../images/figure_robust_explainable.jpg" alt="Explainability analysis for robust fine-grained classification">
+        <figcaption>Example visual from my explainability-focused fine-grained classification work.</figcaption>
+    </figure>
+
+    <h2>Why Explainability Matters in Practice</h2>
+    <p>For many computer vision projects, we report a single number like accuracy and move on. In real deployments, that is usually not enough. Two models with similar accuracy can behave very differently: one may rely on stable object cues, while another relies on shortcuts such as background texture, border artefacts, or lighting patterns.</p>
+    <p>If we do not inspect model attention, we risk shipping systems that look good in validation but fail under domain shift. Explainability methods help us check whether the model is learning the right reasons.</p>
+
+    <h2>What I Focused on in My Research</h2>
+    <p>In my thesis work on robust fine-grained visual classification, I treated explainability as part of model evaluation, not just a visualization add-on. In particular, I used explanation maps to compare how training choices changed model focus and confidence behaviour across datasets.</p>
+    <p>This was especially useful when testing transfer-learning and re-adaptation pathways, where small preprocessing or data-order differences can change what the model attends to.</p>
+
+    <h2>A Practical Explainability Workflow</h2>
+    <ol>
+        <li>Train candidate models with different adaptation strategies.</li>
+        <li>Select matched samples from easy, borderline, and failure cases.</li>
+        <li>Generate explanation maps (e.g., Grad-CAM) per model/sample pair.</li>
+        <li>Check whether attention aligns with task-relevant regions.</li>
+        <li>Cross-check maps against confidence and per-class error trends.</li>
+    </ol>
+    <p>This gives a stronger debugging loop than accuracy-only comparison.</p>
+
+    <h2>What I Learned</h2>
+    <ul>
+        <li><strong>Attention quality predicts deployment stability:</strong> models focusing on relevant fine-grained regions were more robust under drift.</li>
+        <li><strong>Preprocessing choices can shift attention:</strong> seemingly minor choices (for example padding strategy) changed confidence and feature focus.</li>
+        <li><strong>Explainability helps pick adaptation strategy:</strong> when metrics were close, explanation maps often made the safer option obvious.</li>
+    </ul>
+
+    <div class="highlight">
+        <strong>Practical takeaway:</strong> Treat explainability outputs as a gating signal in model selection. If attention looks wrong, do not trust a high validation score.
+    </div>
+
+    <h2>How to Use This in Your Own Pipeline</h2>
+    <p>A lightweight policy that works well is: require each model candidate to pass both a metric threshold and an explainability sanity check on a fixed review set. This avoids selecting brittle models that happen to score well on one snapshot of data.</p>
+    <p>You can also archive explanation maps across model versions. Over time, this creates a useful history of how your system’s reasoning evolves as data and retraining strategies change.</p>
+
+    <h2>Related Papers and Source</h2>
+    <ul class="citation-list">
+        <li>Zuo, Z., Smith, J., Stonehouse, J., Obara, B. (2024). <em>Robust and Explainable Fine-Grained Visual Classification with Transfer Learning: A Dual-Carriageway Framework</em>. CVPR Workshop. <a href="https://arxiv.org/abs/2405.05853" target="_blank">arXiv</a>.</li>
+        <li>Selvaraju, R. R., et al. (2017). <em>Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization</em>. ICCV.</li>
+        <li>PhD Thesis Chapter 4 (2025).</li>
+    </ul>
+
+    <section class="related-posts">
+        <h2>Related Posts</h2>
+        <div class="blog-cards">
+            <article class="blog-card">
+                <img src="../../images/framework-2.jpg" alt="Re-adaptation framework figure" class="blog-card-image">
+                <h3><a href="2026-03-11-model-readaptation-under-domain-shift.html">Model Re-Adaptation Under Domain Shift</a></h3>
+                <p class="blog-meta">Companion post</p>
+                <p>How to choose retraining vs fine-tuning pathways as your data distribution evolves.</p>
+            </article>
+        </div>
+    </section>
+</article>
+
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Joseph Smith. All rights reserved.</p>
+    </footer>
+</body>
+</html>
