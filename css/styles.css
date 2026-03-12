@@ -142,6 +142,7 @@ section + section {
 #education,
 #work-history,
 #skills,
+#awards,
 #publications,
 #presentations,
 #blog,
@@ -175,6 +176,7 @@ section li {
 
 #education ul,
 #work-history ul,
+#awards ul,
 #publications ul,
 #presentations ul {
     list-style: none;
@@ -183,6 +185,7 @@ section li {
 
 #education li,
 #work-history li,
+#awards li,
 #publications li,
 #presentations li {
     background: var(--surface);
@@ -195,9 +198,75 @@ section li {
 
 #education h3,
 #work-history h3,
+#awards h3,
 #publications h3,
 #presentations h3 {
     margin-top: 0;
+}
+
+.award-card {
+    background: linear-gradient(165deg, #ffffff 0%, #f7fbfb 100%);
+    border: 1px solid #cbdede;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    display: grid;
+    gap: 14px;
+}
+
+.award-copy p {
+    margin-bottom: 0;
+}
+
+.award-caption {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.certificate-button {
+    width: fit-content;
+    border: 1px solid var(--brand);
+    background-color: var(--brand);
+    color: #fff;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.certificate-button:hover {
+    background-color: var(--brand-dark);
+    transform: translateY(-1px);
+}
+
+.certificate-button:disabled {
+    background-color: #9eb8b8;
+    border-color: #9eb8b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.award-certificate {
+    width: 100%;
+    max-width: 720px;
+    border-radius: 10px;
+    border: 1px solid #bfd6d6;
+    box-shadow: 0 14px 28px rgba(15, 50, 50, 0.16);
+    cursor: zoom-in;
+}
+
+.award-certificate--hidden {
+    display: none;
+}
+
+.award-status {
+    margin-top: -4px;
+}
+
+.award-status-missing {
+    color: #7a2d2d;
 }
 
 #skills ul {
@@ -478,6 +547,7 @@ footer {
     #publications li,
     #presentations li,
     #skills li,
+    .award-card,
     .post-content,
     .blog-intro,
     .blog-listing {
