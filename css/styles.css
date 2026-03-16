@@ -293,6 +293,20 @@ section li {
     margin: 20px 0;
 }
 
+.blog-cards--centered {
+    display: grid;
+    width: fit-content;
+    max-width: 100%;
+    grid-template-columns: repeat(3, 280px);
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.blog-cards--centered .blog-card {
+    width: 100%;
+    max-width: 280px;
+}
+
 .blog-card {
     border: 1px solid var(--line);
     border-radius: 12px;
@@ -540,6 +554,10 @@ footer {
 
     section {
         padding: 28px 16px;
+    }
+
+    .blog-cards--centered {
+        grid-template-columns: 1fr;
     }
 
     #education li,
