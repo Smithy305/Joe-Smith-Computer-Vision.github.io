@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourier Image Similarity: From Paper to Open-Source Package</title>
+    <link rel="stylesheet" href="../../css/styles.css?v=1.3">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../../images/your-headshot.jpg">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Joseph Smith</h1>
+                <p>Deep Learning and Computer Vision Researcher</p>
+            </div>
+            <div class="header-image">
+                <img src="../../images/your-headshot.jpg" alt="Joseph Smith" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../../index.html#about">About Me</a></li>
+            <li><a href="../../index.html#education">Education</a></li>
+            <li><a href="../../index.html#work-history">Work History</a></li>
+            <li><a href="../../index.html#skills">Skills</a></li>
+            <li><a href="../../index.html#awards">Awards</a></li>
+            <li><a href="../../index.html#publications">Publications</a></li>
+            <li><a href="../../index.html#presentations">Presentations</a></li>
+            <li><a href="../index.html">Blog</a></li>
+            <li><a href="../../index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <article class="post-content">
+            <h1>Fourier Image Similarity: From Paper to Open-Source Package</h1>
+            <p class="blog-meta">March 27, 2026 · 10 min read</p>
+            <div class="content-switcher">
+                <a class="blog-button secondary" href="../index.html">Back to Blog</a>
+                <a class="blog-button" href="../../index.html">Back to Portfolio</a>
+            </div>
+            <div class="tag-list">
+                <span class="tag-chip">Frequency Domain</span>
+                <span class="tag-chip">Image Similarity</span>
+                <span class="tag-chip">Open Source</span>
+            </div>
+            <figure class="post-hero">
+                <img src="../../images/figure_fourier_peaks.png" alt="FFT magnitude spectrum with detected Fourier peaks highlighted">
+                <figcaption>FFT magnitude image (left) and detected peaks after the DC masking and local-maxima steps (right). Each circle marks a retained peak with its matching radius.</figcaption>
+            </figure>
+
+            <h2>Why Frequency Domain for Image Comparison?</h2>
+            <p>Most image similarity approaches operate in pixel space: comparing histograms, SSIM, feature embeddings, or learned descriptors. These work well when images share spatial structure at similar scales and positions. But some classes of images are better understood by their <strong>periodic structure</strong> — the repeating patterns that are invisible in individual pixel values but immediately apparent as sharp peaks in the Fourier magnitude spectrum.</p>
+            <p>The specific context in my paper was anti-copy patterns: fine security prints designed with deliberate repeating microstructure that degrades under reprography. Two images that look visually similar in pixel space may have very different Fourier peak arrangements depending on whether that microstructure survived capture — and those differences are diagnostically important.</p>
+            <p>Once I had the Fourier comparison pipeline working for that task, it was clearly reusable beyond it. The <a href="https://github.com/Smithy305/fourier-image-similarity" target="_blank" rel="noopener">fourier-image-similarity</a> package extracts exactly that pipeline — no domain-specific logic, no segmentation or downstream classifier — just the frequency-domain feature extraction and scoring that any project can drop in.</p>
+
+            <h2>How the Pipeline Works</h2>
+            <p>The package is structured as six composable stages. Understanding what each stage does makes it easier to tune for a new domain.</p>
+
+            <h3>1. Loading and Preprocessing</h3>
+            <p>Images are loaded as grayscale float arrays and optionally resized to a fixed resolution. Working in grayscale is deliberate: the Fourier magnitude of a colour image mixes luminance and chrominance in ways that complicate peak interpretation. Resizing to a common resolution before transforming keeps peak coordinates comparable across images.</p>
+
+            <h3>2. FFT Magnitude and Phase</h3>
+            <p>The centered 2D FFT is computed for each image, producing two outputs:</p>
+            <ul>
+                <li><strong>Magnitude</strong> — log-scaled and min-max normalised. Reveals how much energy sits at each spatial frequency. Periodic patterns produce sharp bright peaks away from the DC centre.</li>
+                <li><strong>Phase</strong> — the argument of the complex transform, normalised to <code>[0, 1]</code>. Less commonly used but locally informative around peaks: phase entropy captures how ordered or chaotic the phase structure is in a neighbourhood.</li>
+            </ul>
+
+            <h3>3. Peak Detection</h3>
+            <p>Local maxima are extracted from the magnitude image using a maximum filter. The DC region at the spectrum centre is masked out first — it is almost always dominant and uninformative for pattern comparison. The top <em>N</em> peaks by strength are retained (default 35), with a minimum spacing constraint to prevent tightly clustered detections counting as multiple peaks.</p>
+
+            <h3>4. Local Peak Features</h3>
+            <p>For each detected peak, two statistics are computed over a disk-shaped neighbourhood in the magnitude and phase images:</p>
+            <ul>
+                <li><strong>Peak prominence</strong> — the peak-to-trough range within the local window, measuring how sharply the peak stands out from its surroundings.</li>
+                <li><strong>Peak entropy</strong> and <strong>phase entropy</strong> — histogram-based Shannon entropy of the neighbourhood. Low entropy means a clean, well-defined feature; high entropy indicates a diffuse, noisy region.</li>
+            </ul>
+
+            <h3>5. Reference Selection</h3>
+            <p>When comparing a query set against a large pool of candidate reference images, you usually want a representative subset rather than all of them. The selection heuristic computes pairwise nearest-peak distances between all candidates and scores each candidate by how close its peak pattern is to the rest of the pool. Images with the lowest mean nearest-peak distance to others are the most central and are selected as references.</p>
+            <p>This is useful in practice because collecting a "perfect" clean reference set is rarely possible — you often have a noisy pool and need to filter it programmatically.</p>
+
+            <h3>6. Similarity Scoring</h3>
+            <p>Each query image is compared against each reference image using six component metrics, then aggregated into a single score in <code>[0, 1]</code>:</p>
+            <ul>
+                <li><strong>Peak match ratio (35%)</strong> — fraction of peaks in each image that have a close counterpart in the other, within a spatial radius threshold. The dominant term because peak layout is the most discriminating frequency signature.</li>
+                <li><strong>Peak mismatch ratio (20%)</strong> — fraction of peaks that have no match. Complementary to match ratio but penalises spurious detections in one image.</li>
+                <li><strong>Average closest-peak distance (20%)</strong> — mean nearest-neighbour distance between the two peak sets. Captures spatial offset even when peaks broadly align.</li>
+                <li><strong>Prominence difference (10%)</strong> — difference in mean local prominence. Flags when one image has sharper, more isolated peaks than the other.</li>
+                <li><strong>Peak entropy difference (7.5%)</strong> and <strong>phase entropy difference (7.5%)</strong> — differences in neighbourhood chaos around peaks in magnitude and phase respectively.</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>Key design choice:</strong> the score is entirely spatial-frequency-based. There is no learned component, no embedding from a neural network, and no dependency on image labels. This makes it interpretable, fast, and applicable to any image domain where periodic structure carries discriminative information.
+            </div>
+
+            <h2>Using the Package</h2>
+            <p>Installation is straightforward — the only dependencies are NumPy, SciPy, and Pillow:</p>
+            <pre><code>pip install fourier-image-similarity</code></pre>
+
+            <p>The CLI covers the most common workflow:</p>
+            <pre><code>fourier-image-similarity \
+  --query-dir /path/to/query_images \
+  --reference-dir /path/to/reference_images \
+  --num-references 10</code></pre>
+
+            <p>If you have a larger pool and want automatic reference selection, swap <code>--reference-dir</code> for <code>--reference-candidate-dir</code>. The tool will select the most representative subset and report which images were chosen.</p>
+
+            <p>For use inside a pipeline, the Python API keeps things simple:</p>
+            <pre><code>from fourier_image_similarity.pipeline import run_similarity_analysis
+
+rows, references = run_similarity_analysis(
+    query_dir="/path/to/query_images",
+    reference_dir="/path/to/reference_images",
+    num_references=10,
+)
+
+for row in rows[:5]:
+    print(row["file"], row["similarity_score"])</code></pre>
+
+            <p>Each row in the output contains the full breakdown: similarity score, peak match and mismatch ratios, average closest-peak distance, and the three difference metrics. This makes it easy to diagnose why a particular image scored high or low rather than just accepting the aggregate number.</p>
+
+            <h2>Tuning for a New Domain</h2>
+            <p>The defaults were calibrated for the anti-copy pattern use case (tall, narrow crops at 216×685 pixels with up to 35 peaks). If you are applying this to a different image type, these parameters are worth reviewing:</p>
+            <ul>
+                <li><strong><code>image_size</code></strong> — set this to a consistent resolution that preserves the spatial frequency you care about. Very large images slow the FFT; very small images lose fine frequency detail.</li>
+                <li><strong><code>num_peaks</code></strong> — increase for images with rich periodic structure; decrease for images with a small number of dominant frequency components.</li>
+                <li><strong><code>match_radius</code></strong> — the pixel radius within which two peaks are considered matched. If your images have significant geometric distortion between query and reference, increase this.</li>
+                <li><strong><code>dc_exclusion_radius</code></strong> — the masked region around the DC centre. Increase if low-frequency background variation is dominating your detections.</li>
+            </ul>
+
+            <h2>Relation to the Paper</h2>
+            <p>The package implements the Fourier-domain comparison sub-pipeline from our anti-copy pattern detection framework. The full paper additionally covers mobile phone image acquisition, a segmentation stage to isolate the pattern region, and a downstream classifier — none of which are included here. The package is intentionally narrow: it provides only the frequency comparison logic that generalises beyond that specific application.</p>
+            <p>The paper and package can be cited independently. If you use the package in research, the README includes a BibTeX entry pointing to the Array 2026 paper.</p>
+
+            <h2>Related Papers and Source</h2>
+            <ul class="citation-list">
+                <li>Smith, J., Zuo, Z., Stonehouse, J., Obara, B. (2026). <em>Mobile phone image-based framework for anti-copy pattern detection and classification</em>. Array, 29, 100643. <a href="https://doi.org/10.1016/j.array.2025.100643" target="_blank" rel="noopener">DOI: 10.1016/j.array.2025.100643</a>.</li>
+                <li>Source code: <a href="https://github.com/Smithy305/fourier-image-similarity" target="_blank" rel="noopener">github.com/Smithy305/fourier-image-similarity</a></li>
+            </ul>
+
+            <section class="related-posts">
+                <h2>Related Posts</h2>
+                <div class="blog-cards">
+                    <article class="blog-card">
+                        <img src="../../images/figure_quality_effects.jpg" alt="Quality effects on deep neural network classification" class="blog-card-image">
+                        <h3><a href="2026-03-11-image-quality-filtering-for-fgvc.html">Image Quality Filtering for Fine-Grained Classification</a></h3>
+                        <p class="blog-meta">Companion post · robustness in data pipelines</p>
+                        <p>The frequency comparison pipeline assumes images are clean enough for peaks to be detectable. This post covers how to gate on image quality before feeding images into any comparison step.</p>
+                    </article>
+                </div>
+            </section>
+        </article>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Joseph Smith. All rights reserved.</p>
+    </footer>
+</body>
+</html>
