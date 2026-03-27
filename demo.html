@@ -215,6 +215,25 @@
             color: #fff;
         }
 
+        /* ── ML score ───────────────────────────────────────────────────── */
+        .ml-score {
+            font-size: 0.8rem;
+            font-family: monospace;
+            color: var(--muted);
+            margin-top: 0.65rem;
+            padding: 0.35rem 0.6rem;
+            background: var(--surface-alt);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            display: none;
+        }
+        .ml-score strong { color: var(--text); font-family: 'Montserrat', sans-serif; font-size: 0.75rem; }
+        .ml-hint { opacity: 0.6; }
+        .ml-delta { font-weight: bold; margin-left: 0.3rem; }
+        .ml-delta.negative { color: #b91c1c; }
+        .ml-delta.positive { color: #166534; }
+        .ml-delta.neutral  { color: var(--muted); }
+
         /* ── Research callout ────────────────────────────────────────────── */
         .research-callout {
             border-left: 4px solid var(--brand);
@@ -316,6 +335,7 @@
                     <div class="predictions" id="original-predictions" aria-live="polite">
                         <p class="pred-placeholder">Running inference&hellip;</p>
                     </div>
+                    <div class="ml-score" id="original-ml"></div>
                 </div>
                 <div class="image-panel">
                     <div class="panel-label">Degraded</div>
@@ -328,6 +348,7 @@
                     <div class="predictions" id="degraded-predictions" aria-live="polite">
                         <p class="pred-placeholder">Adjust the sliders below.</p>
                     </div>
+                    <div class="ml-score" id="degraded-ml"></div>
                     <div id="confidence-delta" class="confidence-delta neutral" style="display:none"></div>
                 </div>
             </div>
@@ -346,7 +367,7 @@
                     </div>
                     <div class="control-group">
                         <label>JPEG Quality <span class="control-value" id="val-jpeg">100%</span></label>
-                        <input type="range" id="ctrl-jpeg" min="5" max="100" step="5" value="100">
+                        <input type="range" id="ctrl-jpeg" min="1" max="100" step="1" value="100">
                     </div>
                     <div class="control-group">
                         <label>Brightness <span class="control-value" id="val-brightness">100%</span></label>
