@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robustness Demo — Joseph Smith</title>
+    <link rel="stylesheet" href="css/styles.css?v=1.3">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="images/your-headshot.jpg">
+    <style>
+        /* ── Upload area ─────────────────────────────────────────────────── */
+        .upload-area {
+            border: 2px dashed var(--brand);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            max-width: 560px;
+            margin: 2rem auto 0;
+            user-select: none;
+        }
+        .upload-area:hover,
+        .upload-area.drag-over {
+            background: rgba(0, 106, 106, 0.06);
+        }
+        .upload-area.disabled {
+            opacity: 0.55;
+            cursor: default;
+            pointer-events: none;
+        }
+        .upload-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.75rem;
+        }
+        .upload-area p {
+            margin: 0.3rem 0;
+            color: var(--muted);
+        }
+        .upload-area strong {
+            color: var(--text);
+        }
+        .model-status {
+            font-size: 0.875rem;
+            color: var(--brand);
+            margin-top: 0.75rem;
+        }
+
+        /* ── Split view ──────────────────────────────────────────────────── */
+        #demo-split {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 680px) {
+            #demo-split { grid-template-columns: 1fr; }
+        }
+        .image-panel {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+        .panel-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--brand);
+            margin-bottom: 0.75rem;
+        }
+        .image-panel canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+            background: var(--bg);
+        }
+
+        /* ── Predictions ─────────────────────────────────────────────────── */
+        .predictions {
+            margin-top: 1rem;
+            min-height: 5rem;
+        }
+        .prediction-item {
+            margin-bottom: 0.65rem;
+        }
+        .prediction-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.83rem;
+            margin-bottom: 0.25rem;
+            gap: 0.5rem;
+        }
+        .prediction-class {
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .prediction-prob {
+            color: var(--brand);
+            font-family: monospace;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .prediction-bar-track {
+            height: 5px;
+            background: var(--line);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .prediction-bar-fill {
+            height: 100%;
+            background: var(--brand);
+            border-radius: 3px;
+            transition: width 0.35s ease;
+        }
+        .confidence-delta {
+            font-size: 0.8rem;
+            font-family: monospace;
+            text-align: center;
+            margin-top: 0.85rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 5px;
+        }
+        .confidence-delta.negative { background: #fde8e8; color: #b91c1c; }
+        .confidence-delta.positive { background: #e8f5e8; color: #166534; }
+        .confidence-delta.neutral  { background: var(--surface-alt); color: var(--muted); border: 1px solid var(--line); }
+        .pred-placeholder {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        /* ── Controls ────────────────────────────────────────────────────── */
+        #demo-controls {
+            display: none;
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-top: 1.5rem;
+        }
+        #demo-controls h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--brand);
+            margin: 0 0 1.25rem;
+        }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem 1.75rem;
+        }
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .control-value {
+            font-family: monospace;
+            color: var(--brand);
+            font-size: 0.85rem;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--line);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--brand);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border: none;
+            border-radius: 50%;
+            background: var(--brand);
+            cursor: pointer;
+        }
+        .reset-btn {
+            display: block;
+            margin: 1.5rem auto 0;
+            padding: 0.5rem 2rem;
+            background: transparent;
+            border: 2px solid var(--brand);
+            color: var(--brand);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+        }
+        .reset-btn:hover {
+            background: var(--brand);
+            color: #fff;
+        }
+
+        /* ── Research callout ────────────────────────────────────────────── */
+        .research-callout {
+            border-left: 4px solid var(--brand);
+            background: var(--surface-alt);
+            border-radius: 0 8px 8px 0;
+            padding: 1.1rem 1.4rem;
+            margin-top: 2.5rem;
+            font-size: 0.9rem;
+        }
+        .research-callout a {
+            color: var(--brand);
+        }
+
+        /* ── Spinner ─────────────────────────────────────────────────────── */
+        .spinner {
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 3px solid var(--line);
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.4rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Processing overlay ──────────────────────────────────────────── */
+        .panel-inner {
+            position: relative;
+        }
+        .processing-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: var(--brand);
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Joseph Smith</h1>
+                <p>Deep Learning and Computer Vision Researcher</p>
+            </div>
+            <div class="header-image">
+                <img src="images/your-headshot.jpg" alt="Joseph Smith" class="profile-pic">
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html#about">About Me</a></li>
+            <li><a href="index.html#education">Education</a></li>
+            <li><a href="index.html#work-history">Work History</a></li>
+            <li><a href="index.html#skills">Skills</a></li>
+            <li><a href="index.html#awards">Awards</a></li>
+            <li><a href="index.html#publications">Publications</a></li>
+            <li><a href="index.html#presentations">Presentations</a></li>
+            <li><a href="blog/index.html">Blog</a></li>
+            <li><a href="demo.html">Demo</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <article class="post-content">
+            <h1>Image Robustness Demo</h1>
+            <p class="blog-meta">Interactive · MobileNetV2 · ImageNet</p>
+
+            <p>Upload any image and use the sliders to apply image degradations — blur, noise, JPEG compression, brightness, and contrast shifts — while watching MobileNetV2's top predictions and confidence scores update in real time. This directly illustrates one of the core themes from my PhD research: how image quality variation affects deep neural network performance.</p>
+
+            <div class="content-switcher">
+                <a class="blog-button secondary" href="blog/index.html">Blog</a>
+                <a class="blog-button" href="index.html">Portfolio</a>
+            </div>
+
+            <!-- Upload area -->
+            <div id="upload-area" class="upload-area disabled" tabindex="0" role="button" aria-label="Upload an image">
+                <span class="spinner"></span>
+                <p id="model-status" class="model-status">Loading MobileNetV2&hellip;</p>
+            </div>
+
+            <!-- Split view (shown after upload) -->
+            <div id="demo-split">
+                <div class="image-panel">
+                    <div class="panel-label">Original</div>
+                    <div class="panel-inner">
+                        <canvas id="original-canvas"></canvas>
+                    </div>
+                    <div class="predictions" id="original-predictions" aria-live="polite">
+                        <p class="pred-placeholder">Running inference&hellip;</p>
+                    </div>
+                </div>
+                <div class="image-panel">
+                    <div class="panel-label">Degraded</div>
+                    <div class="panel-inner">
+                        <canvas id="degraded-canvas"></canvas>
+                        <div id="processing-overlay" class="processing-overlay" style="display:none">
+                            <span class="spinner"></span>&nbsp;Processing&hellip;
+                        </div>
+                    </div>
+                    <div class="predictions" id="degraded-predictions" aria-live="polite">
+                        <p class="pred-placeholder">Adjust the sliders below.</p>
+                    </div>
+                    <div id="confidence-delta" class="confidence-delta neutral" style="display:none"></div>
+                </div>
+            </div>
+
+            <!-- Degradation controls (shown after upload) -->
+            <div id="demo-controls">
+                <h3>Degradation Controls</h3>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>Gaussian Blur <span class="control-value" id="val-blur">0 px</span></label>
+                        <input type="range" id="ctrl-blur" min="0" max="10" step="0.5" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>Gaussian Noise <span class="control-value" id="val-noise">0</span></label>
+                        <input type="range" id="ctrl-noise" min="0" max="60" step="1" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label>JPEG Quality <span class="control-value" id="val-jpeg">100%</span></label>
+                        <input type="range" id="ctrl-jpeg" min="5" max="100" step="5" value="100">
+                    </div>
+                    <div class="control-group">
+                        <label>Brightness <span class="control-value" id="val-brightness">100%</span></label>
+                        <input type="range" id="ctrl-brightness" min="30" max="200" step="5" value="100">
+                    </div>
+                    <div class="control-group">
+                        <label>Contrast <span class="control-value" id="val-contrast">100%</span></label>
+                        <input type="range" id="ctrl-contrast" min="30" max="200" step="5" value="100">
+                    </div>
+                </div>
+                <button class="reset-btn" id="reset-btn">Reset All</button>
+            </div>
+
+            <div class="research-callout">
+                <strong>Research context:</strong> This demo connects directly to my work on image quality and model robustness. My <a href="blog/posts/2026-03-11-image-quality-filtering-for-fgvc.html">quality filtering post</a> covers how quality mismatch between training and deployment degrades classifier performance — and why filtering the lowest-quality training data often beats architectural changes. The model here is MobileNetV2 trained on ImageNet, running entirely in your browser via TensorFlow.js — no data leaves your machine.
+            </div>
+        </article>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Joseph Smith. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+    <script src="js/demo.js"></script>
+</body>
+</html>
